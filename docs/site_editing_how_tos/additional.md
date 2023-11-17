@@ -75,4 +75,4 @@ graph TD;
 If you don't want to use Mermaid diagrams, you can set the `mermaid_enabled` option in your `_config.yml` file to `false`.
 
 ## Customising the Mermaid theme {#mermaid-theme}
-Mermaid supports a number of default themes. This can be configured using the `mermaid_theme` option in your `_config.yml` file. Note that this theme must be supported in the [Mermaid configuration](https://mermaid-js.github.io/mermaid/#/./Setup?id=theme).
+Mermaid supports a number of default themes. This can be configured using the `mermaid_theme` option in your `_config.yml` file. Note that this theme must be supported in the [Mermaid configuration](https://mermaid-js.github.io/mermaid/#/./Setup?id=theme). 

@@ -31,4 +31,4 @@ remote_theme: zendesk/jekyll-theme-zendesk-garden@v0.3.0
 ## Additional Features
 
 [Sidebar Navigation](./customization/sidebar.md) and [Search](./customization/search.md) can be
-enabled through additional site configuration.
+enabled through additional site configuration. 
