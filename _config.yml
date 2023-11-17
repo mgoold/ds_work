@@ -21,6 +21,7 @@ sidebar:
   - label: Postgresql Development
     children:
       - sessiondata
+      - retention_queries
 
 defaults:
   - scope:
