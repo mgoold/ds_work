@@ -18,4 +18,3 @@ sidebar:
   - label: Postgresql Development
     children:
       - sessiondata
-      - testdoc2
