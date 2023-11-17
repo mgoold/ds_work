@@ -1,0 +1,31 @@
+# title: ds_template
+remote_theme: zendesk/jekyll-theme-zendesk-garden@main
+
+permalink: pretty
+
+search_enabled: true
+auto_page_title: false
+
+mermaid_enabled: true
+mermaid_theme: forest
+
+sidebar:
+  - getting-started
+  - label: Customization
+    children:
+      - sidebar
+      - search
+      - relative-nav
+      - additional-config
+  - label: test_nesting
+    children:
+      - testdoc1
+      - testdoc2
+  - development
+
+defaults:
+  - scope:
+      path: ''
+      type: 'pages'
+    values:
+      layout: default
