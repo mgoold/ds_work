@@ -14,8 +14,8 @@ sidebar:
       - search
       - relative-nav
       - additional-config
-  - label: test_nesting
+  - label: Postgresql Development
     children:
-      - testdoc1
+      - sessiondata
       - testdoc2
   - development
