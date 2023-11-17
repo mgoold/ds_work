@@ -1,8 +1,6 @@
 ---
 id: relative-nav
 title: Relative Navigation
-previous_page: search
-next_page: additional-config
 ---
 
 Relative navigation links can be added at the end of the content for any page.

@@ -7,15 +7,15 @@ search_enabled: true
 auto_page_title: false
 
 sidebar:
-  - getting-started
-  - label: Customization
+  - label: Site Editing How-tos
     children:
+      - getting-started
       - sidebar
       - search
       - relative-nav
       - additional-config
+      - development
   - label: Postgresql Development
     children:
       - sessiondata
       - testdoc2
-  - development

@@ -1,8 +1,6 @@
 ---
 id: search
 title: Search
-previous_page: sidebar
-next_page: relative-nav
 ---
 
 Site search can be configured in your `_config.yml` by setting `search_enabled`.
