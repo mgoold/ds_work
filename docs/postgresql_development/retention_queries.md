@@ -17,6 +17,7 @@ Analyzing retention data generally resolves into two trivial tasks: comparing us
 
 Here's an example of breaking out users by tenure.  In this case we're breaking out new users who are in their first month.  We could go on to do this for unique users by other tenure groups.  Depending on your reporting user case, you can do this by breaking out unique metrics as shown here, or with a case statement that covers all cases and unique user_id.  In real life, it is critical to actually make metrics or a case statement for all tenure cases, so that you can QA your cumulative total unique users across all break out metrics vs the total unique metric.  Do this QA even if you don't intend to show all the metrics. 
 
+```
 drop table if exists user_retention;
 
 CREATE TABLE IF NOT EXISTS user_retention 
@@ -31,11 +32,13 @@ COPY user_retention
 FROM '/Users/ouonomos/git_repo/redshift_dev/test_data/user_retention_test.csv' DELIMITERS E'\t' 
 CSV HEADER
 ;
+```
 
 -- /* may have your retention please */
 
 -- find users joining in a given month for the first time
 
+```
 select
 DATE_TRUNC('month', t1.activity_date) active_month
 ,count(distinct t1.userid) uusers
@@ -52,11 +55,13 @@ from
 group by 1 
 order by 1 desc
 ;
+```
 
 ### Finding New Users With Day Lag
 
 Here's a variation that evaluates a lag statement to find users with a gap of 3 days.
 
+```
 select
 t1.activity_date
 ,count(distinct t1.userid) uusers
@@ -72,11 +77,13 @@ from
 group by 1
 order by 1
 ;
+```
 
 ### Finding Users Who Are In Two Successive Months
 
 A classic.  Notice in this case that we're using a left join.  As the inner joins are identical, you could also do this with a "With CTE" and just write the inner query once.
 
+```
 select
 distinct
 t1.active_month
@@ -104,3 +111,4 @@ and DATE_PART('Month', t1.active_month::TIMESTAMP) - DATE_PART('Month',t2.active
 group by 1
 order by 1
 ;
+```
