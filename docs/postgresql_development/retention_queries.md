@@ -4,7 +4,7 @@ title: Working with Retention Data
 ---
 
 # Data Assets for This Section Are [Here](https://github.com/mgoold/ds_gallimaufry/tree/main/data_science_assets/retention_queries):
-* a jupyter notebook for generating test data
+* a jupyter notebook for generating example data
 * some example SQL.
 
 # May I Have Your Retention Please: Working with Retention Data
