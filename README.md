@@ -19,4 +19,4 @@ Put it this way: if your research insights **wouldn't** eventually improve our e
 
 With this cycle in mind, I like to keep my hand in everything a bit: I work to improve not just my modelling but signal capture, pipeline processes, and reporting layer improvements that we use to improve company awareness.  On which more later in these pages.
 
-OK, that actually wasn't much about me.  Let's just assume that I like long walks on the beach, pets, entertainment that sends the right cultural signals, and some impressive, outgoing sporting activity.
+
