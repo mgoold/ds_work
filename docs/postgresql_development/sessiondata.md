@@ -11,7 +11,7 @@ At [this link](https://github.com/mgoold/ds_gallimaufry/tree/main/data_science_a
 # Tutorial/Notes
 When we talk about working with session data, we mean systematically partitioning a set of sequenced events according to some characteristics that make the partition globally unique over all the data in the set.  Typically this partition is created with respect to unique user ids and sequences of time stamped events.
 
-"But wait," I hear you yawn, "no one needs to know this.  Website data always comes with a session id now."  Yep.  But in real life, at least my real life, you end up combining user event sequences across platforms.  For example, I had to evaluate internal CS behavior across 2 kinds of software that they used in a total workflow.  
+"But wait," I hear you yawn, "no one needs to know this.  Website data always comes with a session id now."  Yep.  But in real life, at least my real life, you end up combining user event sequences across platforms. For example, I had to evaluate internal CS behavior across 2 kinds of software that they used in a total workflow.  So you have to roll your own session is across multiple sources of time sequenced event, per userid, in order to answer questions like "how do users go back and forth among tools? Where is the time loss when they do so?".    
 
 For a first real world example, let's look at a basic set of integers:
 ```
