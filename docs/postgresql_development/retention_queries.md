@@ -3,6 +3,10 @@ id: retention_queries
 title: Working with Retention Data
 ---
 
+# Data Assets for This Section Are {Here](https://github.com/mgoold/ds_gallimaufry/tree/main/data_science_assets/retention_queries):
+* a jupyter notebook for generating test data
+* some example SQL.
+
 # May I Have Your Retention Please: Working with Retention Data
 
 Analyzing retention data generally resolves into two trivial tasks: comparing user counts from one period to another, or breaking out users by tenure.
