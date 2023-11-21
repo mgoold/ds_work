@@ -22,9 +22,9 @@ sidebar:
     children:
       - sessiondata
       - retention_queries
-  - label: Donor Data
+  - label: Donor Exploration
       - donor_data
-      
+
 defaults:
   - scope:
       path: ''
