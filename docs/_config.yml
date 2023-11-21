@@ -20,4 +20,4 @@ sidebar:
       - sessiondata
       - retention_queries
   - label: Donor Data
-      - donor_data_mining1
+      - donor_data

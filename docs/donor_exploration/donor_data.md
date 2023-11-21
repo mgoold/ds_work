@@ -1,5 +1,5 @@
 ---
-id: donor_data_mining1
+id: donor_data
 title: >
   Donor Data: A Kaggle Classic
 ---
