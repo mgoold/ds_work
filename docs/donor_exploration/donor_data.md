@@ -1,3 +1,8 @@
+---
+id: donor_data
+title: Donor Data Mining
+---
+
 # Donor Data: A Kaggle Classic
 
 Here's some work I did for an interview process.  The question wasn't really "can you do multivariate data"? But more along the lines of "what would you break out for a quick id of potential donor populations" and "what other data might you bring in"?
