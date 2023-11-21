@@ -20,4 +20,5 @@ sidebar:
       - sessiondata
       - retention_queries
   - label: Donor Exploration
+    children:
       - donor_data
