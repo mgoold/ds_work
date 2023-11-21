@@ -93,7 +93,7 @@ df = pd.read_csv('/Users/ouonomos/Documents/cool_unv_data2.tsv', sep='\t')
 
 ## The Graduate Year Concept
 
-If you were to look at the book noted above, you'd find that "year graduated" is in inverse correlation to the log of lhc, which makes sense ... you will have less money to donate if you haven't graduated, or haven't been earning as long as a graduate.  I turned "year graduated" into "years since grad" variable by subtracting it from 2022.
+If you were to look at the book noted above, you'd find that "year graduated" is in inverse correlation to the log of lhc, which makes sense ... you will have less money to donate if you haven't graduated, or haven't been earning long as a graduate.  I turned "year graduated" into "years since grad" variable by subtracting it from 2022.
 
 Now you see a positive relationship pictured below.  But it's suspicious ... a great bulk of the data points are very old.  We're going to have to be better informed about the meaning of this variable, and qualify it per some "still alive" or "years left to donate" principle.
 
