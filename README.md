@@ -5,7 +5,7 @@
 
 [Linked in Profile](https://www.linkedin.com/in/markwgoold/)
 
-## Another collection of DS notes to self, hopefully useful to you as well, gentle reader.
+## Another collection of DS notes to self, hopefully useful to you as well.
 
 This really is data science notes to self future self. So it's less about demonstrating ability and more about recording stuff I wish I'd been told earlier.  HTH!
 
