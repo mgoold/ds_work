@@ -341,7 +341,7 @@ df.head()
 
 
 
-# Intuition: Years Earning Will Driver of Donation Level
+# Intuition: Years Earning Will Be Driver of Donation Level
 
 ## The Graduate Year Concept
 
@@ -411,7 +411,7 @@ df2.shape[0]
     
 
 
-This is quite suggestive.  Around 16 years we begin to get donors in the higher deciles. Other factors constant (a big if), years since graduation begins to tell us something about the level of donation we can suggest to donor. Also, we can see that in every range of years after graduation there is potential to move donors up from lower donation levels.  
+This is quite suggestive.  At around 16 years we begin to get donors in the higher deciles. Other factors constant (a big if), years since graduation begins to tell us something about the level of donation we can suggest to donor. Also, we can see that in every range of years after graduation there is potential to move donors up from lower donation levels.  
 
 ## Continuing to Work Graduate Year Concept...
 
