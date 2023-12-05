@@ -1,11 +1,15 @@
----
-id: donor_data
-title: Donor Data Mining
----
-
 # Donor Data: A Kaggle Classic
 
-Here's some work I did for an interview process.  The question wasn't really "can you do multivariate regression?", but more along the lines of "what would you break out for a quick id of potential donor populations" and "what other data might you bring in"?
+Here's some work I did for an interview process.  The primary question was "what would you do to quickly identify donors who might enhance their donation level?"  --So whatever we do, it shouldn't take too long.
+
+## TLDR:
+
+To quickly identify target donors, we will try to find donors with lower levels of donation who resemble higher level donors in all respects except their donation level.  <-- We do this rapidly by visually confirming intuitions about years of employment and donation level in the data, and then breaking out donors according to this principle.
+
+Next, we begin to look at further attribute correlations on donation level, and get modest analytic gains with marital, business and engagement indicators.
+
+Finally, we note that regional grouping attributes, income level, and above all longitudinal data would probably help the most as data additions.
+
 
 
 ```python
@@ -29,6 +33,10 @@ https://cooldata.files.wordpress.com/2018/01/cool-data-a-handbook-for-predictive
 
 Original Set At:
 https://www.kaggle.com/datasets/michaelpawlus/fundraising-data/code
+
+### Auxiliary Defs:
+
+Here are some python defs for processing this specific raw data with pandas.  I didn't end up using all of them.
 
 
 ```python
@@ -74,10 +82,82 @@ def rec_mar_status(val):
 
 # Retrieving Data
 
-I doctored it in postgres so that I could do some window function work on the log of lhc.
+I load the data below as a csv, but first I docotored it in postgres on the desktop to take advantage of window functions and some other things as follows:
+
+```
+drop table if exists cool_unv_data;
+
+CREATE TABLE IF NOT EXISTS cool_unv_data 
+(
+	id_number int,
+	LifetimeHC 	text,
+	Email_Present int,
+	BusPhone_Present int,
+	Grad_Year int,
+	Marital_Status varchar,
+	SpouseID_Present int,
+	JobTitle_Present int,
+	VarsityAth_Present int,
+	StudGovt_Present int,
+	OtherStudActs_Present int,
+	Greek_Present int,
+	Prefix_is_Mr int,
+	Prefix_is_Ms int,
+	Prefix_is_Dr int,
+	Prefix_is_Mrs int
+);
+
+
+COPY cool_unv_data 
+FROM '/Users/ouonomos/Documents/cool_data-university-sample-file-Sheet1.tsv' DELIMITERS E'\t' 
+CSV HEADER
+;
+
+
+drop table if exists  tab1;
+
+create temp table tab1 as 
+select
+t1.*
+,case when lhc_clean>0 then log(lhc_clean) else lhc_clean end log_lhc -- taking log of lhc data
+from
+(
+	select 
+	t1.*
+	,cast(replace(replace(t1.lifetimehc,'$',''),',','') as float) as lhc_clean -- cleaning lhc data
+	,2018-t1.grad_year as years_since_grad -- artificially using 2018 as the "present" against which the users graduate year is compared, based 
+												-- on data being loaded 5 years ago.
+	,case when t1.Prefix_is_Mr=1 then 1 -- imputing gender based on prefix
+		when t1.prefix_is_ms=1 then 2
+		when t1.prefix_is_mrs=1 then 2
+		else 0 end imputed_gender
+	from cool_unv_data t1
+) t1
+;
+
+drop table if exists  tab2;
+
+create temp table tab2
+as
+select 
+t1.*
+,ntile(10) over (order by log_lhc asc) as donor_lhc_decile
+,ntile(4) over (order by log_lhc asc) as donor_lhc_quartile from tab1 t1
+;
+
+
+COPY (select * from tab2) TO '/Users/ouonomos/Documents/cool_unv_data2.tsv'  CSV  HEADER DELIMITER E'\t';
+
+```
+
+## Key Data Notes
+
+### LHC, "Donor LCH Decile", and "Donor LHC Quartile"
+
+The key dependent variable is "lifetime HC" or lifetime hard credit, meaning the direct donor donations for which the donor received a tax credit.  We abbreviate "lifetime HC" to "LHC" below.
+
 As noted in the https://cooldata.files.wordpress.com/2018/01/cool-data-a-handbook-for-predictive-modeling.pdf ...
-taming the lhc outlers by taking the log is a good move.
-But we can also then do a decile on that log, can call it "lhc level", which will be a lot easier for a stakeholder to digest.
+taming lhc outlers by taking the log is a good move.  But we should also transform that log into deciles and quartiles for easier stakeholder consumption.  
 
 I also grouped the honorifics (e.g. "is Mr.") columns into an "imputed gender" category on the hunch that this would gather more explanatory power and was the analytic point of those categories anyway.  After which I dropped the honorific columns.
 
@@ -86,30 +166,186 @@ I also grouped the honorifics (e.g. "is Mr.") columns into an "imputed gender" c
 # retrieving sql output...
 
 df = pd.read_csv('/Users/ouonomos/Documents/cool_unv_data2.tsv', sep='\t')
-
+df.head()
 ```
 
-# A Super Quick Intuition
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id_number</th>
+      <th>lifetimehc</th>
+      <th>email_present</th>
+      <th>busphone_present</th>
+      <th>grad_year</th>
+      <th>marital_status</th>
+      <th>spouseid_present</th>
+      <th>jobtitle_present</th>
+      <th>varsityath_present</th>
+      <th>studgovt_present</th>
+      <th>...</th>
+      <th>prefix_is_mr</th>
+      <th>prefix_is_ms</th>
+      <th>prefix_is_dr</th>
+      <th>prefix_is_mrs</th>
+      <th>lhc_clean</th>
+      <th>years_since_grad</th>
+      <th>imputed_gender</th>
+      <th>log_lhc</th>
+      <th>donor_lhc_decile</th>
+      <th>donor_lhc_quartile</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1053807</td>
+      <td>$0.25</td>
+      <td>1</td>
+      <td>0</td>
+      <td>2001</td>
+      <td>S</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.25</td>
+      <td>17</td>
+      <td>1</td>
+      <td>-0.60206</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1053757</td>
+      <td>$0.25</td>
+      <td>0</td>
+      <td>0</td>
+      <td>2001</td>
+      <td>U</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.25</td>
+      <td>17</td>
+      <td>1</td>
+      <td>-0.60206</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1078367</td>
+      <td>$0.00</td>
+      <td>1</td>
+      <td>0</td>
+      <td>2003</td>
+      <td>M</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.00</td>
+      <td>15</td>
+      <td>1</td>
+      <td>0.00000</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1023190</td>
+      <td>$0.00</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1979</td>
+      <td>M</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.00</td>
+      <td>39</td>
+      <td>0</td>
+      <td>0.00000</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1053899</td>
+      <td>$0.00</td>
+      <td>0</td>
+      <td>0</td>
+      <td>2001</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.00</td>
+      <td>17</td>
+      <td>2</td>
+      <td>0.00000</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 22 columns</p>
+</div>
+
+
+
+# Intuition: Years Earning Will Driver of Donation Level
 
 ## The Graduate Year Concept
 
-If you were to look at the book noted above, you'd find that "year graduated" is in inverse correlation to the log of lhc, which makes sense ... you will have less money to donate if you haven't graduated, or haven't been earning long as a graduate.  I turned "year graduated" into "years since grad" variable by subtracting it from 2022.
-
-Now you see a positive relationship pictured below.  But it's suspicious ... a great bulk of the data points are very old.  We're going to have to be better informed about the meaning of this variable, and qualify it per some "still alive" or "years left to donate" principle.
-
-
-```python
-plt.scatter(df['years_since_grad'],df['log_lhc'], alpha=0.5)
-plt.show()
-```
-
-
-    
-![png](donor_data_files/donor_data_10_0.png)
-    
-
-
-Let's do some work with seaborn to cap the years after graduation to <=30 and eliminate 0 level donors.  Let's also Make the donor levels stand out:
+If you were to look at the book noted above, you'd find that "year graduated" is in inverse correlation to the log of LHC, which makes sense ... you will have less money to donate if you haven't graduated, or haven't been earning as long as a graduate. There are no rows with missing graduate years.  I turned "year graduated" into "years since grad" variable by subtracting it from 2018 (2018 based on kaggle upload date).
 
 
 ```python
@@ -118,36 +354,81 @@ Let's do some work with seaborn to cap the years after graduation to <=30 and el
 # https://seaborn.pydata.org/generated/seaborn.move_legend.html
 # https://stackoverflow.com/questions/26139423/plot-different-color-for-different-categorical-levels
 
-df2=df.loc[(df['years_since_grad']<=30) & (df['lhc_clean']>0)]
-
 sns.set(rc={'figure.figsize':(9,5)})
-ax=sns.scatterplot(x='years_since_grad', y='log_lhc', data=df2, hue='lhc_level', ec=None, palette="viridis")
-sns.move_legend(ax, "upper left", bbox_to_anchor=(1, 1))
+ax=sns.scatterplot(x='years_since_grad', y='log_lhc', data=df, hue='donor_lhc_decile', ec=None, palette="tab20")
+# ax.set(title='Log of LHC by Years Since Graduation, Donor LHC Decile --10 Is Highest')
+ax.text(x=0.5, y=1.1, s='Log of LHC by Years Since Graduation, Donor LHC Decile', fontsize=16, weight='bold', ha='center', va='bottom', transform=ax.transAxes)
+ax.text(x=0.5, y=1.05, s='10 Is Highest Donor LHC Level', fontsize=12, alpha=0.75, ha='center', va='bottom', transform=ax.transAxes)
+ax.text(x=0.5, y=1, s='5000 Users', fontsize=12, alpha=0.75, ha='center', va='bottom', transform=ax.transAxes)
+
+ax.legend(reversed(handles), reversed(labels), loc='upper left',title='Donor LHC Decile', bbox_to_anchor=(1, 1))
+df.shape[0]
 ```
 
 
+
+
+    5000
+
+
+
+
     
-![png](donor_data_files/donor_data_12_0.png)
+![png](donor_data_files/donor_data_13_1.png)
     
 
 
-This is quite suggestive.  Around 16 years we begin to get donors in the higher deciles.  Also, we can see that in every range of years after graduation there is potential to move donors from level to another.  Remember that they are coming into the set every year; it isn't a only static population aging from the left hand of the grid and getting wealthier.
+Above, you can see a positive relationship between log_lhc and years since graduation.  But it's suspicious ... a great bulk of the data points are very old.  We'll to have to be better informed about the meaning of this variable, and qualify it per some "still alive" or "years left to donate" concept.
+
+Let's use cap the years after graduation to <=30 so that the set is limited to users with 30 years of earning opportunity after graduation.  
+
+
+```python
+
+df2=df.loc[(df['years_since_grad']<=30)]
+sns.set(rc={'figure.figsize':(9,5)})
+ax=sns.scatterplot(x='years_since_grad', y='log_lhc', data=df2, hue='donor_lhc_decile', ec=None, palette="tab20")
+
+ax.text(x=0.5, y=1.1, s='Log of LHC by Years Since Graduation, Donor LHC Decile', fontsize=16, weight='bold', ha='center', va='bottom', transform=ax.transAxes)
+ax.text(x=0.5, y=1.05, s='10 Is Highest Donor LHC Level', fontsize=12, alpha=0.75, ha='center', va='bottom', transform=ax.transAxes)
+ax.text(x=0.5, y=1, s='2733 of 5000 Users, Years Since Grad <=30', fontsize=12, alpha=0.75, ha='center', va='bottom', transform=ax.transAxes)
+
+handles, labels = ax.get_legend_handles_labels()
+ax.legend(reversed(handles), reversed(labels), loc='upper left',title='Donor LHC Decile', bbox_to_anchor=(1, 1))
+df2.shape[0]
+```
+
+
+
+
+    2733
+
+
+
+
+    
+![png](donor_data_files/donor_data_15_1.png)
+    
+
+
+This is quite suggestive.  Around 16 years we begin to get donors in the higher deciles. Other factors constant (a big if), years since graduation begins to tell us something about the level of donation we can suggest to donor. Also, we can see that in every range of years after graduation there is potential to move donors up from lower donation levels.  
 
 ## Continuing to Work Graduate Year Concept...
 
-Now let's break it down to illustrate a common quick way to get at potential opportunities.
+Now let's break down donor lhc to illustrate a common quick way to get at potential opportunities.
 
-The idea is to breakout levels of giving (here, quartiles of log LHC) by other explanatory categories, and look for areas of overlap.  For example, there is overlap in years since grad between log_lhc_quart where the spouse_id is present, with respect to min-max range of years_since_grad. 
+The idea is to breakout levels of giving (here, quartiles of log LHC) by other explanatory categories, and look for areas of overlap.  For example, the donor levels 1-3 on years since graduation and marital status. 
 
 What we're aiming for is something like "These donors are in the same earning window (years since grad) and have the same marital status, but are at a lower giving tier.  Maybe we should approach them."  This is a basic routine you would extend for additionally fine grain, and for different combinations of variables, according to your intuition.
 
-Note that the main finding is that we can increase giving by causing the lower tiers to get married.  Just kidding.
+In reality, you have to keep looking at finer grains of user descriptives until you're satisfied that the user groups are sufficiently "alike" that their only difference is their donation level. -- Years since graduation + marital status isn't sufficient, but this illustrates a relatively quick approach to take.
 
 
 ```python
 # n.b. df2 is the frame filtered on years_since_grad where donations are >0
 
-table = pd.pivot_table(df2, values=['years_since_grad'], index=['log_lhc_qrt', 'spouseid_present'],
+column_order=["min", "max"]
+table = pd.pivot_table(df2, values=['years_since_grad'], index=['donor_lhc_quartile', 'spouseid_present'],
                        aggfunc={'years_since_grad': ["min", "max"]})
 table
 ```
@@ -187,7 +468,7 @@ table
       <th>min</th>
     </tr>
     <tr>
-      <th>log_lhc_qrt</th>
+      <th>donor_lhc_quartile</th>
       <th>spouseid_present</th>
       <th></th>
       <th></th>
@@ -195,38 +476,48 @@ table
   </thead>
   <tbody>
     <tr>
-      <th>1</th>
+      <th rowspan="2" valign="top">1</th>
       <th>0</th>
-      <td>23</td>
-      <td>10</td>
+      <td>30</td>
+      <td>5</td>
     </tr>
     <tr>
-      <th>2</th>
+      <th>1</th>
+      <td>30</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">2</th>
       <th>0</th>
-      <td>23</td>
-      <td>20</td>
+      <td>30</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>30</td>
+      <td>7</td>
     </tr>
     <tr>
       <th rowspan="2" valign="top">3</th>
       <th>0</th>
       <td>30</td>
-      <td>10</td>
+      <td>6</td>
     </tr>
     <tr>
       <th>1</th>
       <td>30</td>
-      <td>10</td>
+      <td>6</td>
     </tr>
     <tr>
       <th rowspan="2" valign="top">4</th>
       <th>0</th>
       <td>30</td>
-      <td>11</td>
+      <td>7</td>
     </tr>
     <tr>
       <th>1</th>
       <td>30</td>
-      <td>15</td>
+      <td>11</td>
     </tr>
   </tbody>
 </table>
@@ -236,7 +527,9 @@ table
 
 # On to Regression Review
 
-The choice of spouseid_present in the table above was informed by a review of correlation and regression on log_lhc below.  Again, this is straight out of the accompanying book for the data set and is pretty much what I'd do for a start.  
+The breakouts of relationship between LHC and years since graduation above illustrates a quick approach from intuition.
+
+The use of spouse id was informed by a slower regression-based approach illustrated below.  The regression approach to identifying variables that drive lhc is outlined in the source material noted above; and the below borrows from it.  In real life, I would tend to start with logistic as a baseline rather than linear as shown here, because you'd hope IRL to have real longitudinal data showing user before-and-after donation behavior.
 
 
 # A Spot of Feature Engineering ...
@@ -265,24 +558,25 @@ df.columns
            'varsityath_present', 'studgovt_present', 'otherstudacts_present',
            'greek_present', 'prefix_is_mr', 'prefix_is_ms', 'prefix_is_dr',
            'prefix_is_mrs', 'lhc_clean', 'years_since_grad', 'imputed_gender',
-           'log_lhc', 'lhc_level', 'log_lhc_qrt', 'marital_status_rec_M',
-           'marital_status_rec_NA', 'marital_status_rec_O', 'marital_status_rec_S',
-           'marital_status_rec_U'],
+           'log_lhc', 'donor_lhc_decile', 'donor_lhc_quartile',
+           'marital_status_rec_M', 'marital_status_rec_NA', 'marital_status_rec_O',
+           'marital_status_rec_S', 'marital_status_rec_U'],
           dtype='object')
 
 
 
 # Reviewing Correlation ...
 
+We can do some quick checks to review correlation between the log of LHC and potential explantory variables.  The lighter the color the higher the correlation.
+
+It is possible to iteratively choose between explanatory variables that correlate with each other, selecting just one such variable so as to avoid overfitting and multi-collinearity.  --We ignore that here given the simplicity of the set, in favor of choosing among highest correlation variables by rank.
+
 
 ```python
-
-
-corr_eval_columns=['email_present', 'busphone_present',
+corr_eval_columns=['log_lhc','email_present', 'busphone_present',
        'spouseid_present', 'jobtitle_present',
        'varsityath_present', 'studgovt_present', 'otherstudacts_present',
-       'greek_present','prefix_is_dr','years_since_grad','imputed_gender',
-       'log_lhc','marital_status_rec_M',
+       'greek_present','prefix_is_dr','years_since_grad','imputed_gender','marital_status_rec_M',
        'marital_status_rec_NA', 'marital_status_rec_O', 'marital_status_rec_S',
        'marital_status_rec_U']
 sns.heatmap(df[corr_eval_columns].corr());
@@ -290,7 +584,7 @@ sns.heatmap(df[corr_eval_columns].corr());
 
 
     
-![png](donor_data_files/donor_data_21_0.png)
+![png](donor_data_files/donor_data_24_0.png)
     
 
 
@@ -402,6 +696,8 @@ df[corr_eval_columns].corr()[['log_lhc']].sort_values(by='log_lhc', ascending=Fa
 
 Exactly like the book.  This is never a bad exploration. Interestingly, my one-hot on marital_status_rec_M gives me more correlation, but a little less r2, presumably because spouseid_present is more general.
 
+The basic finding is that years since grad, having a spouse id, and indications of business and accessibility are the strongest predictors of giving in the set.  They would be good candidates for further breakouts like the example above.
+
 
 ```python
 x_explain=df[['years_since_grad','spouseid_present','busphone_present','email_present']]
@@ -416,8 +712,8 @@ print(ks_res.summary())
     Dep. Variable:                log_lhc   R-squared:                       0.330
     Model:                            OLS   Adj. R-squared:                  0.329
     Method:                 Least Squares   F-statistic:                     614.4
-    Date:                Tue, 21 Nov 2023   Prob (F-statistic):               0.00
-    Time:                        09:44:08   Log-Likelihood:                -7594.4
+    Date:                Tue, 05 Dec 2023   Prob (F-statistic):               0.00
+    Time:                        12:47:39   Log-Likelihood:                -7594.4
     No. Observations:                5000   AIC:                         1.520e+04
     Df Residuals:                    4995   BIC:                         1.523e+04
     Df Model:                           4                                         
@@ -425,7 +721,7 @@ print(ks_res.summary())
     ====================================================================================
                            coef    std err          t      P>|t|      [0.025      0.975]
     ------------------------------------------------------------------------------------
-    const               -0.4651      0.041    -11.443      0.000      -0.545      -0.385
+    const               -0.3410      0.038     -9.033      0.000      -0.415      -0.267
     years_since_grad     0.0310      0.001     32.542      0.000       0.029       0.033
     spouseid_present     0.8431      0.043     19.406      0.000       0.758       0.928
     busphone_present     0.3428      0.034     10.072      0.000       0.276       0.410
@@ -434,16 +730,17 @@ print(ks_res.summary())
     Omnibus:                       90.868   Durbin-Watson:                   0.547
     Prob(Omnibus):                  0.000   Jarque-Bera (JB):               63.012
     Skew:                           0.161   Prob(JB):                     2.08e-14
-    Kurtosis:                       2.555   Cond. No.                         114.
+    Kurtosis:                       2.555   Cond. No.                         101.
     ==============================================================================
     
     Notes:
     [1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
 
 
-# Other Directions
+# Additional Directions
 
 Having made a pass at the above set, what other data might I bring in?  There are two potential complementary directions that I'm sure are obvious to everyone:
 
-1. Variables that focus the users demographically.  So for example user zipcodes, neighborhoods, etc.  The idea is to refine them so that you can group scalars like lifetime hc and disposable income and see how much of an outlier a user is relative to their group.  A high outlier + low donor level = better prospect.  
-2. Scalars like putative disposable income.  This is gnarly to do yourself; you're likely to need a vendor. Again, these complement your demographic grouping categorical variables.
+1. Above all, longitudinal data.  You want to see the user in a historical context: "first the user was at one donation level, then something happened, and the level changed."
+2. Variables that focus the users demographically.  So for example user zipcodes, neighborhoods, etc.  The idea is to refine them so that you can group scalars like lifetime hc and disposable income and see how much of an outlier a user is relative to their group.  A lower level donor within a demo group of higher donors who are demographically identical = better prospect.  
+2. Disposable income.  This is gnarly to do yourself; you're likely to need a vendor. Again, these complement your demographic grouping categorical variables.
