@@ -86,6 +86,7 @@ def rec_mar_status(val):
 
 I load the data below as a csv, but first I docotored it in postgres on the desktop to take advantage of window functions and some other things as follows:
 
+```
 drop table if exists cool_unv_data;
 
 CREATE TABLE IF NOT EXISTS cool_unv_data 
@@ -149,6 +150,7 @@ t1.*
 
 
 COPY (select * from tab2) TO '/Users/ouonomos/Documents/cool_unv_data2.tsv'  CSV  HEADER DELIMITER E'\t';
+```
 
 
 
