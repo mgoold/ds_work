@@ -59,11 +59,13 @@ def impute_gender(row):
     val=0
     
     if row['Prefix is Mr.']==1:
-        val=1
+        val='M'
     elif row['Prefix is Ms.']==1:
-        val=2
+        val='F'
     elif row['Prefix is Mrs.']==1:
-        val=2
+        val='F'
+    else:
+        val='OU'
     
     return val
 ```
@@ -84,7 +86,6 @@ def rec_mar_status(val):
 
 I load the data below as a csv, but first I docotored it in postgres on the desktop to take advantage of window functions and some other things as follows:
 
-```
 drop table if exists cool_unv_data;
 
 CREATE TABLE IF NOT EXISTS cool_unv_data 
@@ -127,10 +128,11 @@ from
 	,cast(replace(replace(t1.lifetimehc,'$',''),',','') as float) as lhc_clean -- cleaning lhc data
 	,2018-t1.grad_year as years_since_grad -- artificially using 2018 as the "present" against which the users graduate year is compared, based 
 												-- on data being loaded 5 years ago.
-	,case when t1.Prefix_is_Mr=1 then 1 -- imputing gender based on prefix
-		when t1.prefix_is_ms=1 then 2
-		when t1.prefix_is_mrs=1 then 2
-		else 0 end imputed_gender
+	,case when t1.Prefix_is_Mr=1 then 'M' -- imputing gender based on prefix
+		when t1.prefix_is_ms=1 then 'F'
+		when t1.prefix_is_mrs=1 then 'F'
+		else 'OU'
+		end imputed_gender
 	from cool_unv_data t1
 ) t1
 ;
@@ -148,7 +150,7 @@ t1.*
 
 COPY (select * from tab2) TO '/Users/ouonomos/Documents/cool_unv_data2.tsv'  CSV  HEADER DELIMITER E'\t';
 
-```
+
 
 ## Key Data Notes
 
@@ -233,7 +235,7 @@ df.head()
       <td>0</td>
       <td>0.25</td>
       <td>17</td>
-      <td>1</td>
+      <td>M</td>
       <td>-0.60206</td>
       <td>1</td>
       <td>1</td>
@@ -257,7 +259,7 @@ df.head()
       <td>0</td>
       <td>0.25</td>
       <td>17</td>
-      <td>1</td>
+      <td>M</td>
       <td>-0.60206</td>
       <td>1</td>
       <td>1</td>
@@ -281,7 +283,7 @@ df.head()
       <td>0</td>
       <td>0.00</td>
       <td>15</td>
-      <td>1</td>
+      <td>M</td>
       <td>0.00000</td>
       <td>1</td>
       <td>1</td>
@@ -305,7 +307,7 @@ df.head()
       <td>0</td>
       <td>0.00</td>
       <td>39</td>
-      <td>0</td>
+      <td>OU</td>
       <td>0.00000</td>
       <td>1</td>
       <td>1</td>
@@ -329,7 +331,7 @@ df.head()
       <td>0</td>
       <td>0.00</td>
       <td>17</td>
-      <td>2</td>
+      <td>F</td>
       <td>0.00000</td>
       <td>1</td>
       <td>1</td>
@@ -356,12 +358,10 @@ If you were to look at the book noted above, you'd find that "year graduated" is
 
 sns.set(rc={'figure.figsize':(9,5)})
 ax=sns.scatterplot(x='years_since_grad', y='log_lhc', data=df, hue='donor_lhc_decile', ec=None, palette="tab20")
-# ax.set(title='Log of LHC by Years Since Graduation, Donor LHC Decile --10 Is Highest')
 ax.text(x=0.5, y=1.1, s='Log of LHC by Years Since Graduation, Donor LHC Decile', fontsize=16, weight='bold', ha='center', va='bottom', transform=ax.transAxes)
 ax.text(x=0.5, y=1.05, s='10 Is Highest Donor LHC Level', fontsize=12, alpha=0.75, ha='center', va='bottom', transform=ax.transAxes)
 ax.text(x=0.5, y=1, s='5000 Users', fontsize=12, alpha=0.75, ha='center', va='bottom', transform=ax.transAxes)
 
-ax.legend(reversed(handles), reversed(labels), loc='upper left',title='Donor LHC Decile', bbox_to_anchor=(1, 1))
 df.shape[0]
 ```
 
@@ -542,7 +542,7 @@ Doing some onehot on marital for the greatest frequencies of marital status afte
 ```python
 # recode for greatest frequency, keeping NaN
 df['marital_status_rec']=df['marital_status'].apply(rec_mar_status)
-df = pd.get_dummies(df, columns=['marital_status_rec'], dtype=int)
+df = pd.get_dummies(df, columns=['marital_status_rec','imputed_gender'], dtype=int)
 ```
 
 
@@ -557,10 +557,11 @@ df.columns
            'grad_year', 'marital_status', 'spouseid_present', 'jobtitle_present',
            'varsityath_present', 'studgovt_present', 'otherstudacts_present',
            'greek_present', 'prefix_is_mr', 'prefix_is_ms', 'prefix_is_dr',
-           'prefix_is_mrs', 'lhc_clean', 'years_since_grad', 'imputed_gender',
-           'log_lhc', 'donor_lhc_decile', 'donor_lhc_quartile',
-           'marital_status_rec_M', 'marital_status_rec_NA', 'marital_status_rec_O',
-           'marital_status_rec_S', 'marital_status_rec_U'],
+           'prefix_is_mrs', 'lhc_clean', 'years_since_grad', 'log_lhc',
+           'donor_lhc_decile', 'donor_lhc_quartile', 'marital_status_rec_M',
+           'marital_status_rec_NA', 'marital_status_rec_O', 'marital_status_rec_S',
+           'marital_status_rec_U', 'imputed_gender_F', 'imputed_gender_M',
+           'imputed_gender_OU'],
           dtype='object')
 
 
@@ -576,9 +577,9 @@ It is possible to iteratively choose between explanatory variables that correlat
 corr_eval_columns=['log_lhc','email_present', 'busphone_present',
        'spouseid_present', 'jobtitle_present',
        'varsityath_present', 'studgovt_present', 'otherstudacts_present',
-       'greek_present','prefix_is_dr','years_since_grad','imputed_gender','marital_status_rec_M',
+       'greek_present','prefix_is_dr','years_since_grad','marital_status_rec_M',
        'marital_status_rec_NA', 'marital_status_rec_O', 'marital_status_rec_S',
-       'marital_status_rec_U']
+       'marital_status_rec_U','imputed_gender_F', 'imputed_gender_M','imputed_gender_OU']
 sns.heatmap(df[corr_eval_columns].corr());
 ```
 
@@ -651,6 +652,10 @@ df[corr_eval_columns].corr()[['log_lhc']].sort_values(by='log_lhc', ascending=Fa
       <td>0.141047</td>
     </tr>
     <tr>
+      <th>imputed_gender_OU</th>
+      <td>0.125847</td>
+    </tr>
+    <tr>
       <th>prefix_is_dr</th>
       <td>0.122937</td>
     </tr>
@@ -675,12 +680,16 @@ df[corr_eval_columns].corr()[['log_lhc']].sort_values(by='log_lhc', ascending=Fa
       <td>-0.040020</td>
     </tr>
     <tr>
-      <th>marital_status_rec_S</th>
-      <td>-0.089273</td>
+      <th>imputed_gender_F</th>
+      <td>-0.041957</td>
     </tr>
     <tr>
-      <th>imputed_gender</th>
-      <td>-0.096891</td>
+      <th>imputed_gender_M</th>
+      <td>-0.068734</td>
+    </tr>
+    <tr>
+      <th>marital_status_rec_S</th>
+      <td>-0.089273</td>
     </tr>
     <tr>
       <th>marital_status_rec_U</th>
@@ -712,8 +721,8 @@ print(ks_res.summary())
     Dep. Variable:                log_lhc   R-squared:                       0.330
     Model:                            OLS   Adj. R-squared:                  0.329
     Method:                 Least Squares   F-statistic:                     614.4
-    Date:                Tue, 05 Dec 2023   Prob (F-statistic):               0.00
-    Time:                        12:47:39   Log-Likelihood:                -7594.4
+    Date:                Wed, 06 Dec 2023   Prob (F-statistic):               0.00
+    Time:                        10:20:25   Log-Likelihood:                -7594.4
     No. Observations:                5000   AIC:                         1.520e+04
     Df Residuals:                    4995   BIC:                         1.523e+04
     Df Model:                           4                                         
