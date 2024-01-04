@@ -1,3 +1,8 @@
+---
+id: donor_data
+title: Donor Data: A Kaggle Classic
+---
+
 # Donor Data: A Kaggle Classic
 
 Here's some work I did for an interview process.  The primary question was "what would you do to quickly identify donors who might enhance their donation level?"  --So whatever we do, it shouldn't take too long.
