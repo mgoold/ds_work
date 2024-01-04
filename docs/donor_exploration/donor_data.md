@@ -1,6 +1,6 @@
 ---
 id: donor_data
-title: Donor Data: A Kaggle Classic
+title: Donor Data A Kaggle Classic
 ---
 
 # Donor Data: A Kaggle Classic
