@@ -32,13 +32,9 @@ COPY user_retention
 FROM '/Users/ouonomos/git_repo/redshift_dev/test_data/user_retention_test.csv' DELIMITERS E'\t' 
 CSV HEADER
 ;
-```
-
--- /* may have your retention please */
 
 -- find users joining in a given month for the first time
 
-```
 select
 DATE_TRUNC('month', t1.activity_date) active_month
 ,count(distinct t1.userid) uusers
@@ -55,6 +51,7 @@ from
 group by 1 
 order by 1 desc
 ;
+
 ```
 
 ### Finding New Users With Day Lag
