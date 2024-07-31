@@ -1,10 +1,5 @@
----
-id: postgres_py_recurrence_eval
-title: Date Period Recurrance
----
 
-
-# Evaluating Date Period Recurrance with Postgres + Python
+# Evaluating Tenure with Postgres + Python
 
 The following outlines a process of evaluating the cadence recurring intervals in donation dates -- but it could be used to evaluate recurrence for any date series.  You'd care about this if you were trying to assess the LTV of a recurring regular vs. intermittent donor, for example, or trying to model whether an intermittent donor would become a regular, reliable one.
 
