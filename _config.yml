@@ -22,6 +22,7 @@ sidebar:
     children:
       - sessiondata
       - retention_queries
+      - postgres_py_recurrence_eval
   - label: Donor Exploration
     children:
       - donor_data
