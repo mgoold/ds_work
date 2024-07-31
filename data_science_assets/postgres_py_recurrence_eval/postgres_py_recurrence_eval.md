@@ -1,8 +1,3 @@
----
-id: postgres_py_recurrence_eval
-title: Date Period Recurrance
----
-
 
 # Evaluating Date Period Recurrance with Postgres + Python
 
