@@ -248,7 +248,9 @@ Going through all this rigamarole will give you results like these fake ones:
 | 1 |1 |7 |1 |
 | 1 |1 |8 |1 |
 
+
 The row_number column gives the original date sequence we processed for this user_id.  Compare the "recurrence_index" to the "months_interval" column, which is the series of month intervals between dates we're evaluating.  The forth value in recurrence_index is the first non-zero value of "1", because that is the first time (per our rules) that this user_id had a series of 3 or more successive identical month intervals -- in this case "1", indicating that they are a monthly donor.
+
 
 When we join this data back to the main set, we can easily window on the user_id to get the earliest date and tenure at which the user became a regular donor.  In the aggregate, we can begin predicting, for example, change to or from recurring donor status as a function of tenure and the type of recurring interval.
 
