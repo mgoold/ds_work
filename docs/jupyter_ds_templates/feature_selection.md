@@ -1,4 +1,7 @@
-
+---
+id: feature_selection
+title: Selecting Features with sklearn, SHAP Values
+---
 
 # Feature Selection
 
