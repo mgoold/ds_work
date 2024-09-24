@@ -1,3 +1,7 @@
+---
+id: grid_search_hyperopt
+title: "Grid Search Using Hyperopt"
+---
 
 # Grid Search With Hyperopt
 
