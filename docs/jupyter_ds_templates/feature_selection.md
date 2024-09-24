@@ -1,5 +1,12 @@
 
+
 # Feature Selection
+
+## Initialize the XGBoost classifier with enable_categorical=True
+```
+eval_metric_list=['auc','aucpr']
+model = XGBClassifier(n_estimators=10, eval_metric=eval_metric_list, max_depth=20, enable_categorical=True, verbosity=2, scale_pos_weight=scposwt, early_stopping_rounds=10, random_state=42)
+```
 
 ## Using Sklearn
 
@@ -96,3 +103,4 @@ thresh_scores
 
 # get feature list per best threshold
 tempdf=shap_importance[(shap_importance['feature_importance_vals']>=threshold)]
+```
