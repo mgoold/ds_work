@@ -1,3 +1,8 @@
+---
+id: metric_performance_evaluation
+title: Pandas Model Perf Metrics for Jupyter
+---
+
 # metric_performance_eval
 
 ## Accuracy
