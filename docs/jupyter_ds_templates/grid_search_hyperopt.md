@@ -11,7 +11,7 @@ Thus, hyperopt improves two things:
 1. speed of selection, because it isn't trying every value in a list you give it.
 2. precision of selection, because it can find any value within the range you set, rather than a specific value in a list (which might be less optimal).
 
-But what to set for the suggested ranges?  I'm sure there's a math-proven approach for range selection, but I confess I used ranges I found on the internet for similar modeling problems.  If the hyperopt parameter value selected happened to be at the end point of the range, I widened the range and re-ran.
+But what to set for the suggested ranges?  I'm sure there's a math-proven approach for range selection, but I confess I used ranges I found on the internet for similar modeling problems.  If the hyperopt parameter value selected happened to be at the end point of the range, I widened the range and re-ran, to ensure I wasn't constraining hyperopt from finding the optimal point.
 
 Process is as follows:
 
