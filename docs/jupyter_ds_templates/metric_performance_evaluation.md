@@ -3,11 +3,13 @@ id: metric_performance_evaluation
 title: Pandas Model Perf Metrics for Jupyter
 ---
 
-# metric_performance_eval
+# Metric Performance Evaluation
+
+The following code snippets are used for evaluating model performance.  They assume you've already run (fit) your model.
 
 ## Accuracy
 
-### xgboost
+### xgboost Example
 ```
 # Make predictions on the test set
 predictions = model.predict(X_test)
@@ -24,8 +26,11 @@ cm.show()
 ```
 
 ## Sensitivity, Specificity
+
+```
 from yellowbrick.classifier import ConfusionMatrix
- 
+```
+
 ## ROC AUC Curve
 
 ```
@@ -43,6 +48,8 @@ visualizer.show()
 # Create the visualizer, fit, score, and show it
 viz = PrecisionRecallCurve(model2)
 viz.fit(X_train, y_train)
+
+
 viz.score(X_test, y_test)
 viz.show()
 ```
