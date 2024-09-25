@@ -22,9 +22,13 @@ shap_values=explainer.shap_values(X_test)
 ## Average SHAP Value per Feature, by Descending Importance
 ### Average value shows average importance of feature.
 
-
 ```
 shap.summary_plot(shap_values, max_display=15, show=False, plot_type='bar', feature_names=tempkeeplist)
 ```
+
+![Screenshot 2024-09-24 at 21 20 02](https://github.com/user-attachments/assets/f540c866-a9e3-4af5-af10-2de1154b70ac)
+
+
+
 
 
