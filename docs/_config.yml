@@ -7,6 +7,23 @@ search_enabled: true
 auto_page_title: false
 
 sidebar:
+  - label: Postgresql Development
+    children:
+      - sessiondata
+      - retention_queries
+      - postgres_py_recurrence_eval
+  - label: Jupyter and Python DS Templates
+    children:
+      - cross_validation
+      - feature_selection
+      - grid_search_hyperopt
+      - jupyter_pandas_basics
+      - metric_performance_evaluation
+      - shap_clustering
+      - shap_value_visualizations
+  - label: Donor Exploration
+    children:
+      - donor_data
   - label: Site Editing How-tos
     children:
       - getting-started
@@ -15,11 +32,3 @@ sidebar:
       - relative-nav
       - additional-config
       - development
-  - label: Postgresql Development
-    children:
-      - sessiondata
-      - retention_queries
-      - postgres_py_recurrence_eval
-  - label: Donor Exploration
-    children:
-      - donor_data
