@@ -1,6 +1,6 @@
 ---
-id: shap_clustering
-title: Shap Clustering Code
+id: shap_value_visualizations
+title: Shap Value Visualization Code
 ---
 
 # shap_value_visualizations
