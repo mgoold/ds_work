@@ -1,6 +1,6 @@
 ---
-id: metric_performance_evaluation
-title: Pandas Model Perf Metrics for Jupyter
+id: shap_clustering
+title: Shap Clustering Code
 ---
 
 # shap_clustering
