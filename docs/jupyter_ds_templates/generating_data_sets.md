@@ -114,6 +114,7 @@ agerng=[int(np.round(m(i))) for i in sample]
 # agerng
 ```
 
+#### Generate Donation Range from Exponential Distribution
 
 ```python
 def get_donation(emp_status):
