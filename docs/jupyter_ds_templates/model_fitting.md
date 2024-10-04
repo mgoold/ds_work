@@ -3,7 +3,6 @@ id: jupyter_model_fitting
 title: Jupyter Model Fitting
 ---
 
-
 # Modeling Fitting
 
 ## splitting combined dataframe into primary X and y sets:

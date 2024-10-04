@@ -2,7 +2,7 @@
 id: jupyter_eda_feature_work
 title: Jupyter EDA and Feature Work
 ---
-
+3.12
 
 ## EDA
 

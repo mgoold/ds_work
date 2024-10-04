@@ -19,8 +19,11 @@ sidebar:
     children:
       - cross_validation
       - feature_selection
+      - generating_datasets
       - grid_search_hyperopt
+      - jupyter_model_fitting
       - jupyter_pandas_basics
+      - jupyter_visualization_xtabs
       - metric_performance_evaluation
       - shap_clustering
       - shap_value_visualizations

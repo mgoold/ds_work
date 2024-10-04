@@ -1,3 +1,8 @@
+---
+id: generating_datasets
+title: Generating Datasets
+---
+
 # Generating Datasets
 
 Sometimes you need a set you imagine but isn't ready-to-hand on kaggle or whatever.  Generating them is one of those things that shouldn't be as enjoyable as it is.  It's strangely fun to spin up an imaginary population.
