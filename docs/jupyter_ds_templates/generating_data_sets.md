@@ -103,10 +103,7 @@ plt.show() # this suppresses the array display
 ```
 
 
-    
-![png](output_12_0.png)
-    
-
+![output_12_0](https://github.com/user-attachments/assets/f6c336f6-dae5-4142-91bc-3ddfd7ca3b6c)
 
 #### Interpolate Beta Dist Values into Integer Range 
 
@@ -138,10 +135,7 @@ plt.hist([donations], 50, density=True, histtype='bar')
 plt.show() # this suppresses the array display
 ```
 
-
-    
-![png](output_16_0.png)
-    
+![output_16_0](https://github.com/user-attachments/assets/e4b3db47-f2b7-45dc-8526-3145644b0f04)
 
 
 ## Combine Lists into Dataframe:
