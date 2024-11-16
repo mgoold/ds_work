@@ -1,4 +1,3 @@
-
 ---
 id: python_poetry
 title: Python Dependency "Adulting" with Poetry
