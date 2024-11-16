@@ -36,5 +36,5 @@ sidebar:
       - additional-config
       - development
   - label: Python Version Management with Poetry
-  children:
-    - python_poetry
+    children:
+      - python_poetry
