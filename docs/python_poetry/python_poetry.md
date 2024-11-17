@@ -7,11 +7,9 @@ title: Python Dependency "Adulting" with Poetry
 
 If you're interested in this topic enough to have clicked on it, I'll assume you've already skimmed a few accounts of people trying to untangle the python install issues they've made for themselves.  My account is no different.  Below is a copy/paste of useful notes to self on how to use poetry along with pyenv and jupyter.  My highlights:
 
-*  I did look at uv vs poetry.  I went with poetry in the end because it looks more likely to remain free and well-maintained.  Also, I had learned to use and appreciate it at Zillow via their ML Ops team.
-
-*  Note the bit on how to get poetry to find the python version you've installed with pyenv.  This was the part that gave me the most trouble in using poetry.
-
-*  Note the stuff on using jupyter notebooks in a poetry/pyenv context.  I found that poetry couldn't resolve "jupyter" when installed inside the init process, but the below way works.
+* I did look at uv vs poetry.  I went with poetry in the end because it looks more likely to remain free and well-maintained.  Also, I had learned to use and appreciate it at Zillow via their ML Ops team.
+* Note the bit on how to get poetry to find the python version you've installed with pyenv.  This was the part that gave me the most trouble in using poetry.
+* Note the stuff on using jupyter notebooks in a poetry/pyenv context.  I found that poetry couldn't resolve "jupyter" when installed inside the init process, but the below way works.
 
 HTH....
 
