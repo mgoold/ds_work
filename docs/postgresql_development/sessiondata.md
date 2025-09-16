@@ -36,6 +36,8 @@ values
 select * from Logs order by 1;
 ```
 Result:
+
+$$
 | log\_id |
 | --- |
 | 1 |
@@ -44,6 +46,7 @@ Result:
 | 7 |
 | 8 |
 | 10 |
+##
 
 Our goal here will to create a unique identifier -- a sessionid, for each continuous set of values.  So you can see that 1-3, 7-8, and 10 are the 3 groups of numbers we'll try and partition.  Thinking about it more, you can see that we want to generate a signal whenever we have an interval between 2 successive numbers that is greater than one.  So the first step is to diff the numbers so that you can evaluate that difference with further code:
 
