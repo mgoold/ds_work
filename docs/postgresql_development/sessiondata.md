@@ -13,6 +13,8 @@ When we talk about working with session data, we mean systematically partitionin
 
 "But wait," I hear you yawn, "no one needs to know this.  Website data always comes with a session id now."  Yep.  But in real life, at least my real life, you end up combining user event sequences across platforms. For example, I had to evaluate internal CS behavior across 2 kinds of software that they used in a total workflow.  So you have to roll your own session is across multiple sources of time sequenced event, per userid, in order to answer questions like "how do users go back and forth among tools? Where is the time loss when they do so?".    
 
+**WHY WE CARE ABOUT THIS** : The main thing you need a session_id (or any partition id like this) is so that you can do aggregate functions & group-bys on that partition.
+
 For a first real world example, let's look at a basic set of integers:
 ```
 drop table if exists Logs;
